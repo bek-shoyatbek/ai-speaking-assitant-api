@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  password         String
+  name             String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  profile          Profile?
+  practiceSessions PracticeSession[]
+}
+
+model Profile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id])
+  englishLevel  String?
+  targetScore   Float?
+  practiceCount Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Lesson {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  youtubeLink  String
+  thumbnailUrl String
+  category     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PracticeCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  topics      Topic[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Topic {
+  id               String            @id @default(uuid())
+  title            String
+  categoryId       String
+  category         PracticeCategory  @relation(fields: [categoryId], references: [id])
+  questions        Question[]
+  practiceSessions PracticeSession[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Question {
+  id        String   @id @default(uuid())
+  content   String
+  topicId   String
+  topic     Topic    @relation(fields: [topicId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PracticeSession {
+  id        String     @id @default(uuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  topicId   String
+  topic     Topic      @relation(fields: [topicId], references: [id])
+  startTime DateTime   @default(now())
+  endTime   DateTime?
+  feedback  String?
+  score     Float?
+  responses Response[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Response {
+  id                String          @id @default(uuid())
+  practiceSessionId String
+  practiceSession   PracticeSession @relation(fields: [practiceSessionId], references: [id])
+  questionContent   String
+  audioUrl          String
+  transcription     String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
