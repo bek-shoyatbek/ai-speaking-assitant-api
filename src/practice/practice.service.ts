@@ -24,7 +24,6 @@ export class PracticeService {
   async getTopicById(id: string) {
     const topic = await this.prisma.topic.findUnique({
       where: { id },
-      include: { questions: true },
     });
     if (!topic) throw new NotFoundException(`Topic with ID ${id} not found`);
     return topic;

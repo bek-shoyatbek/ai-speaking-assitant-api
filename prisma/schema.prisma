@@ -53,19 +53,24 @@ model Topic {
   title            String
   categoryId       String
   category         PracticeCategory  @relation(fields: [categoryId], references: [id])
-  questions        Question[]
   practiceSessions PracticeSession[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }
 
 model Question {
-  id        String   @id @default(uuid())
+  id        String           @id @default(uuid())
   content   String
-  topicId   String
-  topic     Topic    @relation(fields: [topicId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  topic     String
+  category  QuestionCategory
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+enum QuestionCategory {
+  PART1
+  PART2
+  PART3
 }
 
 model PracticeSession {

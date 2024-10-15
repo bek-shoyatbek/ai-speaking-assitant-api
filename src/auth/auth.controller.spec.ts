@@ -46,4 +46,31 @@ describe('AuthController', () => {
       expect(accessToken).toHaveProperty('access_token');
     });
   });
+
+  describe('login', () => {
+    it(
+      'should be not found',
+      async (done) => {
+        const mockInvalidUser = {
+          email: `${faker.person.firstName()}@gmail.com`,
+          password: '' + Math.floor(Math.random() * 10000),
+        };
+
+        const loginSpy = jest.spyOn(service, 'login');
+
+        await controller
+          .login(mockInvalidUser)
+          .then(() => done.fail('UnauthorizedException: Invalid credentials'))
+          .catch((err) => {
+            expect(err.status).toBe(401);
+            expect(err.message).toMatchObject({
+              error: 'UnauthorizedException: Invalid credentials',
+            });
+            done();
+          });
+        expect(loginSpy).toHaveBeenCalledTimes(1);
+      },
+      50 * 1000,
+    );
+  });
 });
